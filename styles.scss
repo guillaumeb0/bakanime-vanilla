@@ -1,0 +1,235 @@
+---
+---
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+section {
+  background-color: white;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  margin: 0;
+  background-color: black;
+
+  &.no-scroll {
+    overflow-y: hidden;
+  }
+}
+
+header, main {
+  margin: 0 8px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  height: 48px;
+
+  position: sticky;
+  top: 0;
+  z-index: 555;
+  background-color: black;
+
+  .logo {
+    text-decoration: none;
+
+    .logo-left-part {
+      color: rgb(85, 26, 139);
+    }
+
+    .logo-right-part {
+      color: #2a603b;
+    }
+  }
+
+  .header-items {
+    display: none;
+    white-space: nowrap;
+    margin-left: 1.75rem;
+    font-size: 12px;
+  }
+
+  .header-items > span {
+    display: inline-block;
+    margin: 0 0.625rem;
+  }
+
+  .header-items > span, a {
+    color: white;
+  }
+
+  .open-menu-cta {
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .menu-item {
+    margin: 5px 0;
+    color: white;
+  }
+}
+
+main {
+  position: relative;
+  display: flow-root;
+}
+
+.search-bar-wrapper {
+  width: 100%;
+}
+
+.search-bar {
+  display: none;
+  width: 70%;
+  max-width: 254px;
+  margin-left: auto;
+  margin-right: auto;
+
+  background-color: #202020;
+  border-radius: 12px;
+
+  > input {
+    margin: 5px;
+    width: 100%;
+    color: white;
+    font-size: 10px;
+    outline: none;
+    border: none;
+    background-color: #202020;
+  }
+
+  &:focus-within {
+    border: 1px solid #2a603b;
+  }
+
+  .material-icons {
+    font-size: 15px;
+    color: rgb(117, 117, 117);
+    align-self: center;
+    margin-right: 0.375em;
+  }
+}
+
+.menu {
+  display: none;
+  width: 50%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 999;
+
+  background-color: #202020;
+
+  text-align: center;
+
+  &.menu-opened {
+    display: block;
+  }
+
+  hr {
+    border: 1px solid grey;
+  }
+
+  .close-menu-cta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 48px;
+    margin-right: 8px;
+    color: white;
+  }
+}
+
+@media only screen and (min-width: 294px) {
+  header {
+    .logo {
+      font-size: 1.25rem;
+    }
+
+    .open-menu-cta {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media only screen and (min-width: 380px) {
+  header .search-bar {
+    display: flex;
+  }
+}
+
+@media only screen and (min-width: 628px) {
+  header {
+    .header-items {
+      display: block;
+    }
+
+    .search-bar {
+      max-width: 434px;
+    }
+
+    .open-menu-cta {
+      display: none;
+    }
+  }
+
+  .menu.menu-opened {
+    display: none;
+  }
+}
+
+@media only screen and (min-width: 720px) {
+  header, main {
+    margin: 0 24px;
+  }
+
+  header {
+    .logo {
+      font-size: 32px;
+    }
+
+    .header-items {
+      font-size: 16px;
+    }
+
+    .search-bar {
+      input {
+        font-size: 1em;
+      }
+
+      .material-icons {
+        font-size: 1.25em;
+      }
+    }
+  }
+}
+
+.hero-banner {
+  height: 294px;
+  background-image: radial-gradient(transparent 30%, black 70%),
+  url("images/kimetsu.jpeg");
+  background-position: 50%;
+  background-size: cover;
+
+  h1 {
+    color: white;
+  }
+}
+
+section {
+  height: 174px;
+}
+
+.anime-list {
+  border: 1px solid black;
+}
