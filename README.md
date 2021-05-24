@@ -1,2 +1,2 @@
 # bakanime-vanilla
-Pet project serving as an HTML/CSS/JS for myself
+Pet project serving as an HTML/CSS/JS refresher for myself
