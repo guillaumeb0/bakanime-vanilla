@@ -113,21 +113,21 @@ header {
   }
 }
 
+.hero-banner {
+  display: flow-root;
+  height: 410px;
+  background-image: linear-gradient(to right, black, transparent 33%),
+  linear-gradient(to bottom right, transparent, transparent, black 95%),
+  url("images/kimetsu_hd.jpg");
+  background-size: cover;
+
+  h1 {
+    color: white;
+  }
+}
+
 main {
   position: relative;
-  display: flow-root;
-
-  .hero-banner {
-    height: 294px;
-    background-image: radial-gradient(transparent 30%, black 70%),
-    url("images/kimetsu.jpeg");
-    background-position: 50%;
-    background-size: cover;
-
-    h1 {
-      color: white;
-    }
-  }
 }
 
 .menu {
@@ -170,6 +170,10 @@ main {
     justify-content: space-between;
     align-items: center;
     color: white;
+
+    h2 {
+      margin: 0;
+    }
 
     .navigation-icon {
       border: 1px solid white;
@@ -261,7 +265,7 @@ main {
   }
 
   &.today-releases {
-    margin-top: -92px;
+    margin-top: -50px;
   }
 }
 
