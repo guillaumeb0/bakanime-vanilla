@@ -46,19 +46,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   const getCurrentDayName = () => new Date().toLocaleDateString('en-GB', {weekday: 'long'})
 
   const currentDayName = getCurrentDayName()
-  let res = await axios.get(`https://api.jikan.moe/v3/schedule/${currentDayName}`)
   const todayReleasesContent = document.querySelector('.today-releases .anime-list-content')
+  const airingAnimesContent = document.querySelector('.airing-animes .anime-list-content')
+  const topUpcomingContent = document.querySelector('.top-upcoming .anime-list-content')
+  const topMangaContent = document.querySelector('.top-manga .anime-list-content')
+
+
+  let res = await axios.get(`https://api.jikan.moe/v3/schedule/${currentDayName}`)
   populateAnimeList(todayReleasesContent, res.data[currentDayName.toLowerCase()])
 
   res = await axios.get('https://api.jikan.moe/v3/top/anime/1/airing')
-  const airingAnimesContent = document.querySelector('.airing-animes .anime-list-content')
   populateAnimeList(airingAnimesContent, res.data.top)
 
   res = await axios.get('https://api.jikan.moe/v3/top/anime/1/upcoming')
-  const topUpcomingContent = document.querySelector('.top-upcoming .anime-list-content')
   populateAnimeList(topUpcomingContent, res.data.top)
 
   res = await axios.get('https://api.jikan.moe/v3/top/manga')
-  const topMangaContent = document.querySelector('.top-manga .anime-list-content')
   populateAnimeList(topMangaContent, res.data.top)
+
+  const cardWidth = window.innerWidth / 7
+  const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
+  navigateBeforeButtons.forEach(button => {
+    button.addEventListener('click', event => {
+      const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      listContent.scrollBy({
+        top: 0,
+        left: cardWidth * -3,
+        behavior: 'smooth'
+      })
+    })
+  })
+
+  const navigateNextButtons = document.querySelectorAll('.navigation-icon.navigate-next')
+  navigateNextButtons.forEach(button => {
+    button.addEventListener('click', event => {
+      const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      listContent.scrollBy({
+        top: 0,
+        left: cardWidth * 3,
+        behavior: 'smooth'
+      })
+    })
+  })
 });
