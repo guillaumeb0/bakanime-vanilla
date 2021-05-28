@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   })
 
   const createCard = ({image_url, title, type, start_date}) => {
-    let cardHtmlString = `
+    const cardHtmlString = `
 <div class="card">
   <img src="${image_url}" alt="${title}_avatar">
   <div class="card-description">
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 </div>
 `
 
-    let template = document.createElement('template')
+    const template = document.createElement('template')
     template.innerHTML = cardHtmlString
     return template.content.firstElementChild
   }
@@ -64,11 +64,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   res = await axios.get('https://api.jikan.moe/v3/top/manga')
   populateAnimeList(topMangaContent, res.data.top)
 
-  const cardWidth = window.innerWidth / 7
   const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
   navigateBeforeButtons.forEach(button => {
     button.addEventListener('click', event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      const cardWidth = listContent.querySelector('.card').offsetWidth || 0
       listContent.scrollBy({
         top: 0,
         left: cardWidth * -3,
@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   navigateNextButtons.forEach(button => {
     button.addEventListener('click', event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      const cardWidth = listContent.querySelector('.card').offsetWidth || 0
       listContent.scrollBy({
         top: 0,
         left: cardWidth * 3,

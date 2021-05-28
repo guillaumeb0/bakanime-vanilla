@@ -206,9 +206,9 @@ main {
 
     .card {
       position: relative;
-      width: 200px;
+      width: calc(100% / 7);
       height: 300px;
-      margin: 0 2px;
+      padding: 0 2px;
       flex-shrink: 0;
       cursor: pointer;
       transition: transform 0.3s ease-in-out;
