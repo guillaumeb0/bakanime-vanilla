@@ -58,9 +58,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.classList.remove('no-scroll')
   })
 
-  const createCard = ({id, imageUrl, title, type, startDate}) => {
+  // Id only useful for debugging purpose.
+  const createCard = ({id, imageUrl, title, type, startDate, klass}) => {
     const cardHtmlString = `
-<div class="card" data-id="${id}">
+<div class="card${klass ? ` ${klass}` : ''}" data-id="${id}">
   <img src="${imageUrl}" alt="${title}_avatar">
   <div class="card-description">
     <h3 class="card-description-title">${title}</h3>
@@ -87,88 +88,45 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const prependAnimeList = (list, cards) => {
-    cards.forEach((card) => list.prepend(card))
-  }
-
-  const pruneExtraOuterCards = ({startIndex, bucketLength, htmlList}) => {
-    const indexesToPrune = getIndexesToPrune(startIndex, bucketLength)
-    console.log(indexesToPrune)
-    htmlList.childNodes.forEach(node => {
-      if (node.nodeType === 1 && indexesToPrune.includes(parseInt(node.dataset.id))) {
-        console.log('to remove:', node)
-        htmlList.removeChild(node)
-      }
-    })
-  }
-
-  const markFirstAndLastVisibleCards = (list) => {
-    // Get all visible elements, sort them, then add data attributes to know first and last visible in the scroll
-    //  bar
-    const visibleElements = Array.from(list.querySelectorAll('.card')).filter((card) => {
-      const bounding = card.getBoundingClientRect()
-      return (bounding.left >= 0 && bounding.left < window.innerWidth)
-    })
-
-    const orderedVisibleElements = visibleElements
-      .sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left)
-
-    orderedVisibleElements[0].dataset.visibleScrollPosition = 'first'
-    orderedVisibleElements[orderedVisibleElements.length - 1].dataset.visibleScrollPosition = 'last'
+    cards.forEach(card => list.prepend(card))
   }
 
   // I'm terrible at maths ! I have no idea how to name this !
   const foo = (num, length) => num >= 0 ? num : length + num
 
-  const getPreviousScrollInfo = (currentStartIndex, length) => {
-    const nextRangeStart = foo(currentStartIndex - state.displayedCardCount, length)
-    const nextRangeEnd = foo(currentStartIndex - 1, length)
-
-    return {
-      rangeStart: nextRangeStart,
-      rangeEnd: nextRangeEnd,
-      indexes: Array.from({length: state.displayedCardCount}, (_, i) => {
-        return foo(nextRangeEnd - i, length)
-      }).reverse()
-    }
+  const getReversedRange = (nextRangeEnd, length) => {
+    return Array.from({length: state.displayedCardCount}, (_, i) => {
+      console.log(`nextRangeEnd: ${nextRangeEnd}, return: ${foo(nextRangeEnd - i, length)}`)
+      return foo(nextRangeEnd - i, length)
+    })
   }
 
   const getRangeFromIndex = (index, length) => {
     return Array.from({length: state.displayedCardCount}, (_, i) => (index + i) % length)
   }
 
-  const animesToCards = (animes, dataIndexes) => {
+  const animesToCards = (animes, dataIndexes, klass) => {
     return dataIndexes.map(i => animes[i]).map((anime) => {
       return createCard({
         id: anime.id,
         imageUrl: anime.image_url,
         title: anime.title,
         type: anime.type,
-        startDate: anime.start_date
+        startDate: anime.start_date,
+        klass
       })
     })
   }
 
-  const getIndexesToPrune = (startIndex, length) => {
-    const previousRange = getPreviousScrollInfo(startIndex, length).indexes
-    const currentRange = getRangeFromIndex(startIndex, length)
-    const nextRange = getRangeFromIndex(startIndex + state.displayedCardCount, length)
-
-    const indexesToKeep = previousRange.concat(currentRange).concat(nextRange)
-    console.log('index to keep:', indexesToKeep)
-    return Array.from({length: length}, (_, i) => i).filter(e => !indexesToKeep.includes(e))
-  }
-
   Object.values(state.buckets).forEach(bucket => {
-    const previousScrollInfo = getPreviousScrollInfo(bucket.currentFirstDisplayedCard, bucket.animes.length)
+    const reversedRange = getReversedRange(bucket.currentFirstDisplayedCard - 1, bucket.animes.length).reverse()
     const currentRange = getRangeFromIndex(bucket.currentFirstDisplayedCard, bucket.animes.length)
     const nextRange = getRangeFromIndex(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
-    const previousCards = animesToCards(bucket.animes, previousScrollInfo.indexes)
+    const previousCards = animesToCards(bucket.animes, reversedRange)
     const currentCards = animesToCards(bucket.animes, currentRange)
     const nextCards = animesToCards(bucket.animes, nextRange)
 
     appendAnimeList(bucket.htmlContainer, previousCards.concat(currentCards).concat(nextCards))
-    bucket.htmlContainer.scrollBy({top: 0, left: currentCards[0].offsetWidth * state.displayedCardCount})
-    markFirstAndLastVisibleCards(bucket.htmlContainer)
   })
 
   const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
@@ -176,40 +134,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     button.addEventListener('click', async event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
-      const cardWidth = listContent.querySelector('.card').offsetWidth || 0
 
       const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
-      const previousScrollInfo = getPreviousScrollInfo(bucket.currentFirstDisplayedCard, bucket.animes.length)
-      const newCards = animesToCards(bucket.animes, previousScrollInfo.indexes.reverse())
+      const nextRangeStart = foo(bucket.currentFirstDisplayedCard - state.displayedCardCount, bucket.animes.length)
+      const nextRangeEnd = foo(bucket.currentFirstDisplayedCard - 1, bucket.animes.length)
+      const reversedRange = getReversedRange(nextRangeEnd - state.displayedCardCount, bucket.animes.length)
+      const newCards = animesToCards(bucket.animes, reversedRange, 'width-0')
 
       prependAnimeList(listContent, newCards)
-      bucket.currentFirstDisplayedCard = previousScrollInfo.rangeStart
-      bucket.currentLastDisplayedCard = previousScrollInfo.rangeEnd
+      setTimeout(() => newCards.forEach(card => card.classList.remove('width-0')), 0)
 
-      listContent.scrollBy({
-        top: 0,
-        left: cardWidth * -state.displayedCardCount,
-        behavior: 'smooth'
-      })
+      // Remove last cards. No transition needed since no impact on the scroll
+      const cards = Array.from(listContent.querySelectorAll('.card'))
+      const nodesToPrune = cards.slice(cards.length - state.displayedCardCount, cards.length)
+      nodesToPrune.forEach(element => listContent.removeChild(element))
 
-      setTimeout(() => {
-        pruneExtraOuterCards(listContent)
-      }, 1000)
-
-      // updateFirstAndLastVisibleCardsOnScrollForward(listContent)
+      bucket.currentFirstDisplayedCard = nextRangeStart
+      bucket.currentLastDisplayedCard = nextRangeEnd
     })
   })
 
   const navigateNextButtons = document.querySelectorAll('.navigation-icon.navigate-next')
   navigateNextButtons.forEach(button => {
-    button.addEventListener('click', event => {
+    button.addEventListener('click', async event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
-      const cardWidth = listContent.querySelector('.card').offsetWidth || 0
-
-      listContent.scrollBy({
-        top: 0,
-        left: cardWidth * state.displayedCardCount,
-        behavior: 'smooth'
+      const nodesToPrune = Array.from(listContent.querySelectorAll('.card')).slice(0, state.displayedCardCount)
+      nodesToPrune.forEach(node => {
+        node.classList.add('width-0')
+        node.addEventListener('transitionend', e => {
+          listContent.removeChild(e.target)
+        })
       })
 
       // Create and append next cards
@@ -222,19 +176,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newCards = animesToCards(bucket.animes, nextRange)
       appendAnimeList(listContent, newCards)
 
-      // Prune extra outer cards
-      pruneExtraOuterCards({
-        startIndex: bucket.currentFirstDisplayedCard + state.displayedCardCount,
-        bucketLength: bucket.animes.length,
-        htmlList: listContent
-      })
-
       // Update bucket info
       bucket.currentFirstDisplayedCard += state.displayedCardCount
       bucket.currentLastDisplayedCard += state.displayedCardCount
-
-
-      // updateFirstAndLastVisibleCardsOnScrollForward(listContent)
     })
   })
 });

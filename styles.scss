@@ -203,7 +203,8 @@ main {
     align-items: center;
     position: relative;
     height: 380px;
-    overflow-x: hidden;
+    overflow-x: visible;
+    transform: translateX(-100%);
 
     .card {
       position: relative;
@@ -212,11 +213,23 @@ main {
       padding: 0 2px;
       flex-shrink: 0;
       cursor: pointer;
-      transition: transform 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+
+      &.width-0 {
+        width: 0;
+      }
 
       &:hover {
         z-index: 2;
         transform: scale(1.1);
+      }
+
+      &:nth-child(7) {
+        transform-origin: left;
+      }
+
+      &:nth-child(13) {
+        transform-origin: right;
       }
 
       img {
@@ -273,14 +286,6 @@ main {
           align-self: end;
         }
       }
-    }
-
-    [data-visible-scroll-position=first] {
-      transform-origin: left;
-    }
-
-    [data-visible-scroll-position=last] {
-      transform-origin: right;
     }
   }
 
