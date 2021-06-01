@@ -17,33 +17,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         name: 'todayReleases',
         animes: await fetchData(`https://api.jikan.moe/v3/schedule/${currentDayName}`, currentDayName.toLowerCase()),
         currentFirstDisplayedCard: 0,
-        currentLastDisplayedCard: 6,
-        htmlContainer: document.querySelector('.today-releases .anime-list-content')
-
+        htmlContainer: document.querySelector('.today-releases .anime-list-content'),
+        isScrolling: false
       },
       {
         name: 'airing',
         animes: await fetchData('https://api.jikan.moe/v3/top/anime/1/airing', 'top'),
         currentFirstDisplayedCard: 0,
-        currentLastDisplayedCard: 6,
-        htmlContainer: document.querySelector('.airing-animes .anime-list-content')
-
+        htmlContainer: document.querySelector('.airing-animes .anime-list-content'),
+        isScrolling: false
       },
       {
         name: 'topUpcoming',
         animes: await fetchData('https://api.jikan.moe/v3/top/anime/1/upcoming', 'top'),
         currentFirstDisplayedCard: 0,
-        currentLastDisplayedCard: 6,
-        htmlContainer: document.querySelector('.top-upcoming .anime-list-content')
-
+        htmlContainer: document.querySelector('.top-upcoming .anime-list-content'),
+        isScrolling: false
       },
       {
         name: 'topManga',
         animes: await fetchData('https://api.jikan.moe/v3/top/manga', 'top'),
         currentFirstDisplayedCard: 0,
-        currentLastDisplayedCard: 6,
-        htmlContainer: document.querySelector('.top-manga .anime-list-content')
-
+        htmlContainer: document.querySelector('.top-manga .anime-list-content'),
+        isScrolling: false
       },
     ]
   }
@@ -92,12 +88,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // I'm terrible at maths ! I have no idea how to name this !
-  const foo = (num, length) => num >= 0 ? num : length + num
+  const foo = (num, length) => (num >= 0 ? num : length + num) % length
 
   const getReversedRange = (nextRangeEnd, length) => {
     return Array.from({length: state.displayedCardCount}, (_, i) => {
-      console.log(`nextRangeEnd: ${nextRangeEnd}, return: ${foo(nextRangeEnd - i, length)}`)
-      return foo(nextRangeEnd - i, length)
+      const cycledNumber = (nextRangeEnd - i) % length
+      return foo(cycledNumber, length)
     })
   }
 
@@ -132,12 +128,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
   navigateBeforeButtons.forEach(button => {
 
-    button.addEventListener('click', async event => {
+    button.addEventListener('click', event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
-
       const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
-      const nextRangeStart = foo(bucket.currentFirstDisplayedCard - state.displayedCardCount, bucket.animes.length)
-      const nextRangeEnd = foo(bucket.currentFirstDisplayedCard - 1, bucket.animes.length)
+
+      if (bucket.isScrolling) return
+      bucket.isScrolling = true
+
+      const nextRangeEnd = bucket.currentFirstDisplayedCard - 1
       const reversedRange = getReversedRange(nextRangeEnd - state.displayedCardCount, bucket.animes.length)
       const newCards = animesToCards(bucket.animes, reversedRange, 'width-0')
 
@@ -149,15 +147,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       const nodesToPrune = cards.slice(cards.length - state.displayedCardCount, cards.length)
       nodesToPrune.forEach(element => listContent.removeChild(element))
 
-      bucket.currentFirstDisplayedCard = nextRangeStart
-      bucket.currentLastDisplayedCard = nextRangeEnd
+      bucket.currentFirstDisplayedCard = foo(bucket.currentFirstDisplayedCard - state.displayedCardCount, bucket.animes.length)
+
+      setTimeout(() => bucket.isScrolling = false, 600)
     })
   })
 
   const navigateNextButtons = document.querySelectorAll('.navigation-icon.navigate-next')
   navigateNextButtons.forEach(button => {
-    button.addEventListener('click', async event => {
+    button.addEventListener('click', event => {
       const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
+
+      if (bucket.isScrolling) return
+      bucket.isScrolling = true
+
       const nodesToPrune = Array.from(listContent.querySelectorAll('.card')).slice(0, state.displayedCardCount)
       nodesToPrune.forEach(node => {
         node.classList.add('width-0')
@@ -166,8 +170,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         })
       })
 
-      // Create and append next cards
-      const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
       const nextRange = getRangeFromIndex(
         bucket.currentFirstDisplayedCard + state.displayedCardCount * 2,
         bucket.animes.length
@@ -176,9 +178,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newCards = animesToCards(bucket.animes, nextRange)
       appendAnimeList(listContent, newCards)
 
-      // Update bucket info
-      bucket.currentFirstDisplayedCard += state.displayedCardCount
-      bucket.currentLastDisplayedCard += state.displayedCardCount
+      bucket.currentFirstDisplayedCard = foo(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
+
+      setTimeout(() => bucket.isScrolling = false, 600)
     })
   })
 });
