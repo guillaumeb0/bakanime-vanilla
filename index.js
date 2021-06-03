@@ -58,15 +58,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const createCard = ({id, imageUrl, title, type, startDate, klass}) => {
     const cardHtmlString = `
 <div class="card${klass ? ` ${klass}` : ''}" data-id="${id}">
-  <img src="${imageUrl}" alt="${title}_avatar">
-  <div class="card-description">
-    <h3 class="card-description-title">${title}</h3>
-    <div class="play-cta-wrapper">
-      <div class="material-icons play-cta">play_circle</div>
-    </div>
-    <div class="card-description-text">
-      <div class="type">${type}</div>
-      ${startDate ? `<div class="start-date">${startDate}</div>` : ''}
+  <div class="aspect-ratio-card-wrapper">
+    <img src="${imageUrl}" alt="${title}_avatar">
+    <div class="card-description">
+      <h3 class="card-description-title">${title}</h3>
+      <div class="play-cta-wrapper">
+        <div class="material-icons play-cta">play_circle</div>
+      </div>
+      <div class="card-description-text">
+        <div class="type">${type}</div>
+        ${startDate ? `<div class="start-date">${startDate}</div>` : ''}
+      </div>
     </div>
   </div>
 </div>
