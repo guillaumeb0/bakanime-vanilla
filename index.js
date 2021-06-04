@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', async () => {
+  const calculateCurrentCardCount = () => {
+    if (window.innerWidth < 294) {
+      return 3
+    } else if (window.innerWidth >= 294 && window.innerWidth < 628) {
+      return 4
+    } else if (window.innerWidth >= 628 && window.innerWidth < 888) {
+      return 5
+    } else {
+      return 6
+    }
+  }
+
   const currentDayName = (() => new Date().toLocaleDateString('en-GB', {weekday: 'long'}))()
 
   const fetchData = async (url, responseKey) => {
@@ -11,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   window.state = {
-    displayedCardCount: 6,
+    displayedCardCount: calculateCurrentCardCount(),
     buckets: [
       {
         name: 'todayReleases',
@@ -53,6 +65,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.menu').classList.remove('menu-opened')
     document.body.classList.remove('no-scroll')
   })
+
+  window.onresize = () => {
+    if (state.displayedCardCount !== calculateCurrentCardCount()) {
+      state.displayedCardCount = calculateCurrentCardCount()
+      initializeBuckets()
+    }
+  }
 
   // Id only useful for debugging purpose.
   const createCard = ({id, imageUrl, title, type, startDate, klass}) => {
@@ -116,16 +135,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   }
 
-  Object.values(state.buckets).forEach(bucket => {
-    const reversedRange = getReversedRange(bucket.currentFirstDisplayedCard - 1, bucket.animes.length).reverse()
-    const currentRange = getRangeFromIndex(bucket.currentFirstDisplayedCard, bucket.animes.length)
-    const nextRange = getRangeFromIndex(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
-    const previousCards = animesToCards(bucket.animes, reversedRange)
-    const currentCards = animesToCards(bucket.animes, currentRange)
-    const nextCards = animesToCards(bucket.animes, nextRange)
+  const initializeBuckets = () => {
+    Object.values(state.buckets).forEach(bucket => {
+      bucket.htmlContainer.textContent = ''
+      const reversedRange = getReversedRange(bucket.currentFirstDisplayedCard - 1, bucket.animes.length).reverse()
+      const currentRange = getRangeFromIndex(bucket.currentFirstDisplayedCard, bucket.animes.length)
+      const nextRange = getRangeFromIndex(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
+      const previousCards = animesToCards(bucket.animes, reversedRange)
+      const currentCards = animesToCards(bucket.animes, currentRange)
+      const nextCards = animesToCards(bucket.animes, nextRange)
 
-    appendAnimeList(bucket.htmlContainer, previousCards.concat(currentCards).concat(nextCards))
-  })
+      appendAnimeList(bucket.htmlContainer, previousCards.concat(currentCards).concat(nextCards))
+    })
+  }
+
+  initializeBuckets()
 
   const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
   navigateBeforeButtons.forEach(button => {

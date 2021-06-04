@@ -19,10 +19,6 @@ body {
   overflow-x: hidden;
 }
 
-//header, main {
-//  margin: 0 8px;
-//}
-
 header {
   display: flex;
   align-items: center;
@@ -136,6 +132,36 @@ header {
 
 main {
   position: relative;
+
+  &:before {
+    content: '';
+    width: 22px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    background-color: black;
+    z-index: 1;
+  }
+
+  &:after {
+    content: '';
+    width: 24px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    background-color: black;
+  }
+
+  .section-separator {
+    border-top: none;
+    border-bottom: 1px solid grey;
+    position: relative;
+    z-index: 5;
+  }
 }
 
 .menu {
@@ -170,19 +196,13 @@ main {
 }
 
 .anime-list {
-  padding-bottom: 70px;
-  border-bottom: 1px solid grey;
+  padding: 0 24px 70px;
 
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    margin-bottom: 40px;
-
-    h2 {
-      margin: 0;
-    }
 
     .navigation-icon {
       border: 1px solid white;
@@ -202,13 +222,12 @@ main {
     display: flex;
     align-items: flex-start;
     position: relative;
-    height: 380px;
     overflow-x: visible;
     transform: translateX(-100%);
 
     .card {
       position: relative;
-      width: calc(100% / 6);
+      width: calc(100% / 3);
       flex-shrink: 0;
       cursor: pointer;
       transition: all .5s ease-out, transform .3s ease-out;
@@ -314,6 +333,14 @@ main {
       font-size: 1.5rem;
     }
   }
+
+  .anime-list {
+    .anime-list-content {
+      .card {
+        width: calc(100% / 4);
+      }
+    }
+  }
 }
 
 @media only screen and (min-width: 380px) {
@@ -340,13 +367,17 @@ main {
   .menu.menu-opened {
     display: none;
   }
+
+  .anime-list {
+    .anime-list-content {
+      .card {
+        width: calc(100% / 5);
+      }
+    }
+  }
 }
 
 @media only screen and (min-width: 720px) {
-  //header, main {
-  //  margin: 0 24px;
-  //}
-
   header {
     .logo {
       font-size: 32px;
@@ -363,6 +394,16 @@ main {
 
       .material-icons {
         font-size: 1.25em;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 888px) {
+  .anime-list {
+    .anime-list-content {
+      .card {
+        width: calc(100% / 6);
       }
     }
   }
