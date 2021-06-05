@@ -29,28 +29,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         name: 'todayReleases',
         animes: await fetchData(`https://api.jikan.moe/v3/schedule/${currentDayName}`, currentDayName.toLowerCase()),
         currentFirstDisplayedCard: 0,
-        htmlContainer: document.querySelector('.today-releases .anime-list-content'),
+        htmlContainer: document.querySelector('.today-releases .list'),
         isScrolling: false
       },
       {
         name: 'airing',
         animes: await fetchData('https://api.jikan.moe/v3/top/anime/1/airing', 'top'),
         currentFirstDisplayedCard: 0,
-        htmlContainer: document.querySelector('.airing-animes .anime-list-content'),
+        htmlContainer: document.querySelector('.airing-animes .list'),
         isScrolling: false
       },
       {
         name: 'topUpcoming',
         animes: await fetchData('https://api.jikan.moe/v3/top/anime/1/upcoming', 'top'),
         currentFirstDisplayedCard: 0,
-        htmlContainer: document.querySelector('.top-upcoming .anime-list-content'),
+        htmlContainer: document.querySelector('.top-upcoming .list'),
         isScrolling: false
       },
       {
         name: 'topManga',
         animes: await fetchData('https://api.jikan.moe/v3/top/manga', 'top'),
         currentFirstDisplayedCard: 0,
-        htmlContainer: document.querySelector('.top-manga .anime-list-content'),
+        htmlContainer: document.querySelector('.top-manga .list'),
         isScrolling: false
       },
     ]
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const cardHtmlString = `
 <div class="card${klass ? ` ${klass}` : ''}" data-id="${id}">
   <div class="aspect-ratio-card-wrapper">
-    <img src="${imageUrl}" alt="${title}_avatar">
+  <img src="${imageUrl}" alt="${title}_avatar">
     <div class="card-description">
       <h3 class="card-description-title">${title}</h3>
       <div class="play-cta-wrapper">
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   navigateBeforeButtons.forEach(button => {
 
     button.addEventListener('click', event => {
-      const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      const listContent = event.target.closest('.anime-list').querySelector('.list')
       const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
 
       if (bucket.isScrolling) return
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const navigateNextButtons = document.querySelectorAll('.navigation-icon.navigate-next')
   navigateNextButtons.forEach(button => {
     button.addEventListener('click', event => {
-      const listContent = event.target.closest('.anime-list').querySelector('.anime-list-content')
+      const listContent = event.target.closest('.anime-list').querySelector('.list')
       const bucket = Object.values(state.buckets).find(value => value.htmlContainer == listContent)
 
       if (bucket.isScrolling) return
