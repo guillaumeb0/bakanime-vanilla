@@ -315,6 +315,34 @@ main {
   }
 }
 
+#modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #101010;
+  filter: opacity(0.7);
+}
+
+#trailer-modal {
+  width: 53.33vw;
+  height: 30vw;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+
+.hidden {
+  display: none;
+}
+
+.no-vertical-scroll {
+  overflow-y: hidden;
+}
+
 
 @media only screen and (min-width: 294px) {
   header {

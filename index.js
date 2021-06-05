@@ -74,9 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Id only useful for debugging purpose.
-  const createCard = ({id, imageUrl, title, type, startDate, klass}) => {
+  const createCard = ({id, malId, imageUrl, title, type, startDate, klass}) => {
     const cardHtmlString = `
-<div class="card${klass ? ` ${klass}` : ''}" data-id="${id}">
+<div class="card${klass ? ` ${klass}` : ''}" data-id="${id}" data-mal-id="${malId}">
   <div class="aspect-ratio-card-wrapper">
   <img src="${imageUrl}" alt="${title}_avatar">
     <div class="card-description">
@@ -126,6 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return dataIndexes.map(i => animes[i]).map((anime) => {
       return createCard({
         id: anime.id,
+        malId: anime.mal_id,
         imageUrl: anime.image_url,
         title: anime.title,
         type: anime.type,
@@ -207,6 +208,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       bucket.currentFirstDisplayedCard = foo(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
 
       setTimeout(() => bucket.isScrolling = false, 600)
+    })
+  })
+
+  const startTrailer = url => {
+    console.log(url)
+    const modal = document.querySelector('#trailer-modal')
+    modal.classList.remove('hidden')
+    document.querySelector('#modal-backdrop').classList.remove('hidden')
+    document.querySelector('body').classList.add('no-vertical-scroll')
+
+    modal.src = url
+  }
+
+  document.querySelector('#modal-backdrop').addEventListener('click', e => {
+    const modal = document.querySelector('#trailer-modal')
+    e.target.classList.add('hidden')
+    modal.classList.add('hidden')
+    document.querySelector('body').classList.remove('no-vertical-scroll')
+
+    modal.src = null
+  })
+
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', async e => {
+      const res = await axios.get(`https://api.jikan.moe/v3/anime/${e.currentTarget.dataset.malId}`)
+      startTrailer(res.data.trailer_url)
     })
   })
 });
