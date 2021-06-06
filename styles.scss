@@ -127,9 +127,36 @@ header {
   }
 
   .hero-banner-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     position: absolute;
     top: 0;
     left: 0;
+    margin-top: -5vw;
+
+    .hero-trailer-cta {
+      display: inline-flex;
+      align-items: center;
+      background-color: white;
+      margin-left: 2.6vw;
+      border-radius: 0.15em;
+      padding: 0.3em 1.1em 0.3em 1em;
+      cursor: pointer;
+      font-size: 1.4vw;
+      font-weight: bolder;
+
+      .icon {
+        margin-right: 0.2em;
+        font-size: 1em;
+      }
+
+      .text {
+        font-size: .9em;
+      }
+    }
   }
 }
 

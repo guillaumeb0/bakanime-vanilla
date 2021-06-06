@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     state.YTPlayer.stopVideo()
   })
 
-  document.querySelectorAll('.card').forEach(card => {
+  document.querySelectorAll('.card, .hero-trailer-cta').forEach(card => {
     card.addEventListener('click', async e => {
       const res = await axios.get(`https://api.jikan.moe/v3/anime/${e.currentTarget.dataset.malId}`)
       startTrailer({url: res.data.trailer_url})
