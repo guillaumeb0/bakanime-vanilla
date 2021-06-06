@@ -237,7 +237,6 @@ main {
     align-items: flex-start;
     position: relative;
     overflow-x: visible;
-    transform: translateX(-100%);
 
     &:before {
       content: '';
@@ -365,6 +364,10 @@ main {
 
 .no-vertical-scroll {
   overflow-y: hidden;
+}
+
+.negative-translate-x-100 {
+  transform: translateX(-100%);
 }
 
 .modal-wrapper {

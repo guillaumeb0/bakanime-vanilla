@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.onresize = () => {
     if (state.displayedCardCount !== calculateCurrentCardCount()) {
       state.displayedCardCount = calculateCurrentCardCount()
-      initializeBuckets()
+      initializeBuckets({buckets: state.buckets})
     }
   }
 
@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const getRangeFromIndex = (index, length) => {
-    return Array.from({length: state.displayedCardCount}, (_, i) => (index + i) % length)
+    return Array.from({length: Math.min(state.displayedCardCount, length)}, (_, i) => (index + i) % length)
   }
 
   const animesToCards = (animes, dataIndexes, klass) => {
@@ -138,21 +138,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   }
 
-  const initializeBuckets = () => {
-    Object.values(state.buckets).forEach(bucket => {
+  const initializeBuckets = ({buckets}) => {
+    Object.values(buckets).forEach(bucket => {
       bucket.htmlContainer.textContent = ''
-      const reversedRange = getReversedRange(bucket.currentFirstDisplayedCard - 1, bucket.animes.length).reverse()
-      const currentRange = getRangeFromIndex(bucket.currentFirstDisplayedCard, bucket.animes.length)
-      const nextRange = getRangeFromIndex(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
-      const previousCards = animesToCards(bucket.animes, reversedRange)
-      const currentCards = animesToCards(bucket.animes, currentRange)
-      const nextCards = animesToCards(bucket.animes, nextRange)
+      let cardsToDisplay
+      if (bucket.animes.length > state.displayedCardCount) {
+        const reversedRange = getReversedRange(bucket.currentFirstDisplayedCard - 1, bucket.animes.length).reverse()
+        const currentRange = getRangeFromIndex(bucket.currentFirstDisplayedCard, bucket.animes.length)
+        const nextRange = getRangeFromIndex(bucket.currentFirstDisplayedCard + state.displayedCardCount, bucket.animes.length)
+        const previousCards = animesToCards(bucket.animes, reversedRange)
+        const currentCards = animesToCards(bucket.animes, currentRange)
+        const nextCards = animesToCards(bucket.animes, nextRange)
 
-      appendAnimeList(bucket.htmlContainer, previousCards.concat(currentCards).concat(nextCards))
+        cardsToDisplay = previousCards.concat(currentCards).concat(nextCards)
+      } else {
+        cardsToDisplay = animesToCards(bucket.animes, Array.from({length: bucket.animes.length}, (_, i) => i))
+      }
+
+      appendAnimeList(bucket.htmlContainer, cardsToDisplay)
     })
   }
 
-  initializeBuckets()
+  initializeBuckets({buckets: state.buckets})
 
   const navigateBeforeButtons = document.querySelectorAll('.navigation-icon.navigate-before')
   navigateBeforeButtons.forEach(button => {
@@ -246,5 +253,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       const res = await axios.get(`https://api.jikan.moe/v3/anime/${e.currentTarget.dataset.malId}`)
       startTrailer({url: res.data.trailer_url})
     })
+  })
+
+  document.querySelector('.search-bar input').addEventListener('keyup', (e) => {
+    const filteredBuckets = []
+
+    if (e.target.value.length > 0) {
+      state.buckets.forEach(bucket => {
+        filteredBuckets.push({
+          ...bucket,
+          animes: bucket.animes.filter(anime => anime.title.toLowerCase().startsWith(e.target.value.toLowerCase())),
+          currentFirstDisplayedCard: 0
+        })
+        bucket.htmlContainer.classList.remove('negative-translate-x-100')
+      })
+    } else {
+      state.buckets.forEach(bucket => {
+        filteredBuckets.push(bucket)
+        bucket.htmlContainer.classList.add('negative-translate-x-100')
+      })
+    }
+    initializeBuckets({buckets: filteredBuckets})
   })
 });
