@@ -81,9 +81,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   <img src="${imageUrl}" alt="${title}_avatar">
     <div class="card-description">
       <h3 class="card-description-title">${title}</h3>
-      <div class="play-cta-wrapper">
-        <div class="material-icons play-cta">play_circle</div>
-      </div>
+      ${type !== 'Manga'
+      ? `<div class="play-cta-wrapper">
+           <div class="material-icons play-cta">play_circle</div>
+         </div>`
+      : ''}
       <div class="card-description-text">
         <div class="type">${type}</div>
         ${startDate ? `<div class="start-date">${startDate}</div>` : ''}
