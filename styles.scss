@@ -109,8 +109,8 @@ header {
 
 .hero-banner {
   position: relative;
-  background-image: linear-gradient(to right, black, transparent 33%),
-  linear-gradient(to bottom right, transparent, transparent, black 95%);
+  background-image: linear-gradient(to right, #101010, transparent 33%),
+  linear-gradient(to bottom right, transparent, transparent, #101010 95%);
   background-size: cover;
 
   h1 {
@@ -147,6 +147,10 @@ header {
       cursor: pointer;
       font-size: 1.4vw;
       font-weight: bolder;
+
+      &:hover {
+        filter: opacity(0.8);
+      }
 
       .icon {
         margin-right: 0.2em;
