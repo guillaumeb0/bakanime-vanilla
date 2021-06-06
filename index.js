@@ -211,29 +211,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   })
 
-  const startTrailer = url => {
-    console.log(url)
-    const modal = document.querySelector('#trailer-modal')
-    modal.classList.remove('hidden')
+  const initializeYTPlayer = ({url}) => {
+    state.YTPlayer = new YT.Player('trailer-modal', {
+      events: {
+        'onReady': (e) => e.target.loadVideoByUrl(url),
+      }
+    })
+  }
+
+  const startTrailer = ({url}) => {
+    document.querySelector('.modal-wrapper').classList.remove('hidden')
     document.querySelector('#modal-backdrop').classList.remove('hidden')
     document.querySelector('body').classList.add('no-vertical-scroll')
 
-    modal.src = url
+    if (!state.YTPlayer) {
+      initializeYTPlayer({url})
+    } else {
+      state.YTPlayer.loadVideoByUrl(url)
+    }
   }
 
   document.querySelector('#modal-backdrop').addEventListener('click', e => {
-    const modal = document.querySelector('#trailer-modal')
     e.target.classList.add('hidden')
-    modal.classList.add('hidden')
+    document.querySelector('.modal-wrapper').classList.add('hidden')
     document.querySelector('body').classList.remove('no-vertical-scroll')
 
-    modal.src = null
+    state.YTPlayer.stopVideo()
   })
 
   document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', async e => {
       const res = await axios.get(`https://api.jikan.moe/v3/anime/${e.currentTarget.dataset.malId}`)
-      startTrailer(res.data.trailer_url)
+      startTrailer({url: res.data.trailer_url})
     })
   })
 });

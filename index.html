@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://www.youtube.com/iframe_api"></script>
   <script defer src="index.js"></script>
   <title>Document</title>
 </head>
@@ -102,12 +103,10 @@
   </section>
 </main>
 <div id="modal-backdrop" class="hidden"></div>
-<iframe
-  id="trailer-modal"
-  class="hidden"
-  src="https://www.youtube.com/embed/hlyxL6ay4Yw"
-  title="YouTube video player" frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
+<div class="modal-wrapper hidden">
+  <div class="aspect-ratio-box">
+    <div id="trailer-modal"></div>
+  </div>
+</div>
 </body>
 </html>
